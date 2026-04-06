@@ -1,1 +1,174 @@
-{"cells":[{"cell_type":"code","source":["# Import required libraries\n","import numpy as np\n","import pandas as pd\n","\n","from sklearn.model_selection import train_test_split\n","from sklearn.neural_network import MLPClassifier\n","from sklearn.metrics import accuracy_score, classification_report, confusion_matrix\n","from sklearn.preprocessing import LabelEncoder, StandardScaler\n","\n","\n","# Column names as per UCI IRIS dataset\n","columns = [\n","    \"sepal_length\",\n","    \"sepal_width\",\n","    \"petal_length\",\n","    \"petal_width\",\n","    \"species\"\n","]\n","\n","# Load the IRIS Dataset (NO HEADER in iris.data)\n","# The original file seems to have a header row that needs to be skipped\n","data = pd.read_csv(\"/content/iris.data\", header=None, names=columns, skiprows=1)\n","\n","# Remove empty rows if present\n","data = data.dropna()\n","\n","# Features and target\n","X = data.iloc[:, 0:4]\n","y = data.iloc[:, 4]\n","\n","# Convert species labels to numeric values\n","encoder = LabelEncoder()\n","y = encoder.fit_transform(y)\n","\n","# Feature scaling (recommended for ANN)\n","scaler = StandardScaler()\n","X = scaler.fit_transform(X)\n","\n","# Train-test split\n","X_train, X_test, y_train, y_test = train_test_split(\n","    X, y, test_size=0.2, random_state=42\n",")\n","\n","# Create ANN model\n","model = MLPClassifier(hidden_layer_sizes=(10, 8), max_iter=1000)\n","\n","# Train model\n","model.fit(X_train, y_train)\n","\n","# Prediction\n","y_pred = model.predict(X_test)\n","\n","# Evaluation\n","print(\"Accuracy:\", accuracy_score(y_test, y_pred))\n","\n","print(\"\\nConfusion Matrix:\")\n","print(confusion_matrix(y_test, y_pred))\n","\n","print(\"\\nClassification Report:\")\n","print(classification_report(y_test, y_pred))"],"metadata":{"colab":{"base_uri":"https://localhost:8080/"},"id":"cLmIEvW55Jlw","executionInfo":{"status":"ok","timestamp":1774843374162,"user_tz":-330,"elapsed":360,"user":{"displayName":"","userId":""}},"outputId":"bffb5a77-99cd-464f-cd93-9767d91e392c"},"execution_count":5,"outputs":[{"output_type":"stream","name":"stdout","text":["Accuracy: 1.0\n","\n","Confusion Matrix:\n","[[10  0  0]\n"," [ 0  9  0]\n"," [ 0  0 11]]\n","\n","Classification Report:\n","              precision    recall  f1-score   support\n","\n","           0       1.00      1.00      1.00        10\n","           1       1.00      1.00      1.00         9\n","           2       1.00      1.00      1.00        11\n","\n","    accuracy                           1.00        30\n","   macro avg       1.00      1.00      1.00        30\n","weighted avg       1.00      1.00      1.00        30\n","\n"]}]}],"metadata":{"colab":{"name":"Welcome To Colab","provenance":[{"file_id":"/v2/external/notebooks/intro.ipynb","timestamp":1774843392491}]},"kernelspec":{"display_name":"Python 3","name":"python3"}},"nbformat":4,"nbformat_minor":0}
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Hitesh04codebot/Ml-Lab/blob/main/LAB%209\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import nltk\n",
+        "import string\n",
+        "from nltk.corpus import stopwords\n",
+        "from nltk.tokenize import word_tokenize\n",
+        "from nltk.stem import PorterStemmer, WordNetLemmatizer\n",
+        "from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer\n",
+        "\n",
+        "# Download necessary resources (run once)\n",
+        "nltk.download('punkt')\n",
+        "nltk.download('stopwords')\n",
+        "nltk.download('wordnet')\n",
+        "nltk.download('punkt_tab')\n",
+        "\n",
+        "# Sample text\n",
+        "text = \"Natural Language Processing (NLP) is amazing! It allows machines to understand human language.\"\n",
+        "\n",
+        "#### Read text from file\n",
+        "# file_path = \"input.txt\"   # Replace with your file name/path\n",
+        "\n",
+        "# with open(file_path, 'r', encoding='utf-8') as file:\n",
+        "#    text = file.read()\n",
+        "\n",
+        "print(\"Original Text:\\n\", text)\n",
+        "\n",
+        "# Lowercasing\n",
+        "text_lower = text.lower()\n",
+        "print(\"\\nLowercased Text:\\n\", text_lower)\n",
+        "\n",
+        "# Tokenization\n",
+        "tokens = word_tokenize(text_lower)\n",
+        "print(\"\\nTokens:\\n\", tokens)\n",
+        "\n",
+        "# Remove punctuation\n",
+        "tokens_no_punct = [word for word in tokens if word not in string.punctuation]\n",
+        "print(\"\\nTokens without punctuation:\\n\", tokens_no_punct)\n",
+        "\n",
+        "# Stopword removal\n",
+        "stop_words = set(stopwords.words('english'))\n",
+        "tokens_no_stop = [word for word in tokens_no_punct if word not in stop_words]\n",
+        "print(\"\\nTokens without stopwords:\\n\", tokens_no_stop)\n",
+        "\n",
+        "# Stemming\n",
+        "stemmer = PorterStemmer()\n",
+        "stemmed_tokens = [stemmer.stem(word) for word in tokens_no_stop]\n",
+        "print(\"\\nStemmed Tokens:\\n\", stemmed_tokens)\n",
+        "\n",
+        "# Lemmatization\n",
+        "lemmatizer = WordNetLemmatizer()\n",
+        "lemmatized_tokens = [lemmatizer.lemmatize(word) for word in tokens_no_stop]\n",
+        "print(\"\\nLemmatized Tokens:\\n\", lemmatized_tokens)\n",
+        "\n",
+        "# Convert back to text\n",
+        "processed_text = \" \".join(lemmatized_tokens)\n",
+        "print(\"\\nProcessed Text:\\n\", processed_text)\n",
+        "\n",
+        "# Bag of Words (Count Vectorizer)\n",
+        "documents = [text, processed_text]\n",
+        "\n",
+        "count_vectorizer = CountVectorizer()\n",
+        "bow = count_vectorizer.fit_transform(documents)\n",
+        "\n",
+        "print(\"\\nBag of Words Feature Names:\\n\", count_vectorizer.get_feature_names_out())\n",
+        "print(\"\\nBag of Words Matrix:\\n\", bow.toarray())\n",
+        "\n",
+        "# TF-IDF Vectorization\n",
+        "tfidf_vectorizer = TfidfVectorizer()\n",
+        "tfidf = tfidf_vectorizer.fit_transform(documents)\n",
+        "\n",
+        "print(\"\\nTF-IDF Feature Names:\\n\", tfidf_vectorizer.get_feature_names_out())\n",
+        "print(\"\\nTF-IDF Matrix:\\n\", tfidf.toarray())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "rea5uwnR8FWB",
+        "outputId": "3cff45d9-1d08-47ce-ed61-cfbc5d4bcd3f"
+      },
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "[nltk_data] Downloading package punkt to /root/nltk_data...\n",
+            "[nltk_data]   Unzipping tokenizers/punkt.zip.\n",
+            "[nltk_data] Downloading package stopwords to /root/nltk_data...\n",
+            "[nltk_data]   Unzipping corpora/stopwords.zip.\n",
+            "[nltk_data] Downloading package wordnet to /root/nltk_data...\n",
+            "[nltk_data] Downloading package punkt_tab to /root/nltk_data...\n",
+            "[nltk_data]   Unzipping tokenizers/punkt_tab.zip.\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Original Text:\n",
+            " Natural Language Processing (NLP) is amazing! It allows machines to understand human language.\n",
+            "\n",
+            "Lowercased Text:\n",
+            " natural language processing (nlp) is amazing! it allows machines to understand human language.\n",
+            "\n",
+            "Tokens:\n",
+            " ['natural', 'language', 'processing', '(', 'nlp', ')', 'is', 'amazing', '!', 'it', 'allows', 'machines', 'to', 'understand', 'human', 'language', '.']\n",
+            "\n",
+            "Tokens without punctuation:\n",
+            " ['natural', 'language', 'processing', 'nlp', 'is', 'amazing', 'it', 'allows', 'machines', 'to', 'understand', 'human', 'language']\n",
+            "\n",
+            "Tokens without stopwords:\n",
+            " ['natural', 'language', 'processing', 'nlp', 'amazing', 'allows', 'machines', 'understand', 'human', 'language']\n",
+            "\n",
+            "Stemmed Tokens:\n",
+            " ['natur', 'languag', 'process', 'nlp', 'amaz', 'allow', 'machin', 'understand', 'human', 'languag']\n",
+            "\n",
+            "Lemmatized Tokens:\n",
+            " ['natural', 'language', 'processing', 'nlp', 'amazing', 'allows', 'machine', 'understand', 'human', 'language']\n",
+            "\n",
+            "Processed Text:\n",
+            " natural language processing nlp amazing allows machine understand human language\n",
+            "\n",
+            "Bag of Words Feature Names:\n",
+            " ['allows' 'amazing' 'human' 'is' 'it' 'language' 'machine' 'machines'\n",
+            " 'natural' 'nlp' 'processing' 'to' 'understand']\n",
+            "\n",
+            "Bag of Words Matrix:\n",
+            " [[1 1 1 1 1 2 0 1 1 1 1 1 1]\n",
+            " [1 1 1 0 0 2 1 0 1 1 1 0 1]]\n",
+            "\n",
+            "TF-IDF Feature Names:\n",
+            " ['allows' 'amazing' 'human' 'is' 'it' 'language' 'machine' 'machines'\n",
+            " 'natural' 'nlp' 'processing' 'to' 'understand']\n",
+            "\n",
+            "TF-IDF Matrix:\n",
+            " [[0.23001377 0.23001377 0.23001377 0.32327633 0.32327633 0.46002754\n",
+            "  0.         0.32327633 0.23001377 0.23001377 0.23001377 0.32327633\n",
+            "  0.23001377]\n",
+            " [0.27761361 0.27761361 0.27761361 0.         0.         0.55522723\n",
+            "  0.39017625 0.         0.27761361 0.27761361 0.27761361 0.\n",
+            "  0.27761361]]\n"
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "colab": {
+      "name": "Welcome To Colab",
+      "provenance": [],
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}
